@@ -1,4 +1,8 @@
 #[macro_use]
+extern crate diesel;
+#[macro_use]
+extern crate juniper;
+#[macro_use]
 extern crate log;
 
 use futures::{future, Future};
@@ -7,6 +11,8 @@ use hyper::{Body, Method, Request, Response, Server};
 use hyper::service::service_fn;
 
 mod db;
+mod model;
+mod schema;
 
 macro_rules! respond_with_json {
     (status: $status:tt, body: $body:expr) => {
@@ -19,7 +25,7 @@ macro_rules! respond_with_json {
 }
 
 fn call(req: Request<Body>) -> Box<Future<Item=Response<Body>, Error=hyper::Error> + Send> {
-    let db_connection = match db::establish_connection() {
+    let _db_connection = match db::establish_connection() {
         Some(connection) => connection,
         None => {
             return Box::new(future::ok(
