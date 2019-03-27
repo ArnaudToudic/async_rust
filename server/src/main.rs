@@ -10,47 +10,44 @@ use futures::{future, Future};
 use hyper::{Body, Method, Request, Response, Server};
 use hyper::service::service_fn;
 
+//use juniper::{EmptyMutation, RootNode};
+
+use std::sync::Arc;
+
 mod db;
+mod graphql;
 mod model;
 mod schema;
 
 macro_rules! respond_with_json {
-    (status: $status:tt, body: $body:expr) => {
+    (status: $status:tt) => {
         Response::builder()
             .header(hyper::header::CONTENT_TYPE, "application/json")
             .status(hyper::StatusCode::$status)
-            .body(Body::from($body))
+            .body(Body::empty())
             .unwrap()
     };
 }
 
 fn call(req: Request<Body>) -> Box<Future<Item=Response<Body>, Error=hyper::Error> + Send> {
-    let _db_connection = match db::establish_connection() {
+    let _db = match db::establish_connection() {
         Some(connection) => connection,
         None => {
             return Box::new(future::ok(
-                respond_with_json!(
-                    status: INTERNAL_SERVER_ERROR,
-                    body:r#"{"msg":"Internal server error"}"#
-                )
+                respond_with_json!(status: INTERNAL_SERVER_ERROR)
             ))
         }
     };
 
+    //let ctx = Arc::new();
+    let root_node = Arc::new(graphql::create_schema());
+
     match (req.method(), req.uri().path()) {
-        (&Method::GET, "/") => {
-            Box::new(future::ok(
-                respond_with_json!(status: OK, body:r#"{"hello": "world"}"#)
-            ))
-        }
-        (&Method::POST, "/") => {
-            Box::new(future::ok(
-                respond_with_json!(status: OK, body:r#"{"hello": "world"}"#)
-            ))
-        }
+        (&Method::GET, "/") => Box::new(juniper_hyper::graphiql("/graphql")),
+        //(&Method::GET, "/graphql") => Box::new(juniper_hyper::graphql(root_node, ctx, req)),
         _ => {
             Box::new(future::ok(
-                respond_with_json!(status: NOT_FOUND, body:r#"{"msg": "Not found"}"#)
+                respond_with_json!(status: NOT_FOUND)
             ))
         }
     }
