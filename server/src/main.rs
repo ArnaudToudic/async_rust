@@ -10,8 +10,6 @@ use futures::{future, Future};
 use hyper::{Body, Method, Request, Response, Server};
 use hyper::service::service_fn;
 
-//use juniper::{EmptyMutation, RootNode};
-
 use std::sync::Arc;
 
 mod db;
@@ -30,7 +28,7 @@ macro_rules! respond_with_json {
 }
 
 fn call(req: Request<Body>) -> Box<Future<Item=Response<Body>, Error=hyper::Error> + Send> {
-    let _db = match db::establish_connection() {
+    let db = match db::establish_connection() {
         Some(connection) => connection,
         None => {
             return Box::new(future::ok(
@@ -39,12 +37,14 @@ fn call(req: Request<Body>) -> Box<Future<Item=Response<Body>, Error=hyper::Erro
         }
     };
 
-    //let ctx = Arc::new();
+    let ctx = Arc::new(graphql::Context {
+        db_conn: db
+    });
     let root_node = Arc::new(graphql::create_schema());
 
     match (req.method(), req.uri().path()) {
         (&Method::GET, "/") => Box::new(juniper_hyper::graphiql("/graphql")),
-        //(&Method::GET, "/graphql") => Box::new(juniper_hyper::graphql(root_node, ctx, req)),
+        (&Method::GET, "/graphql") => Box::new(juniper_hyper::graphql(root_node, ctx, req)),
         _ => {
             Box::new(future::ok(
                 respond_with_json!(status: NOT_FOUND)
