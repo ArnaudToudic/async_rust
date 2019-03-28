@@ -2,8 +2,6 @@
 extern crate diesel;
 #[macro_use]
 extern crate juniper;
-#[macro_use]
-extern crate log;
 
 use futures::{future, Future};
 
@@ -28,7 +26,8 @@ macro_rules! respond_with_json {
 }
 
 fn call(req: Request<Body>) -> Box<Future<Item=Response<Body>, Error=hyper::Error> + Send> {
-    let db = match db::establish_connection() {
+    let pool = db::init_pool();
+    let db = match db::establish_connection(&pool) {
         Some(connection) => connection,
         None => {
             return Box::new(future::ok(
@@ -44,7 +43,8 @@ fn call(req: Request<Body>) -> Box<Future<Item=Response<Body>, Error=hyper::Erro
 
     match (req.method(), req.uri().path()) {
         (&Method::GET, "/") => Box::new(juniper_hyper::graphiql("/graphql")),
-        (&Method::GET, "/graphql") => Box::new(juniper_hyper::graphql(root_node, ctx, req)),
+        //(&Method::GET, "/graphql") => Box::new(juniper_hyper::graphql(root_node, ctx, req)),
+        //(&Method::POST, "/graphql") => Box::new(juniper_hyper::graphql(root_node, ctx, req)),
         _ => {
             Box::new(future::ok(
                 respond_with_json!(status: NOT_FOUND)
