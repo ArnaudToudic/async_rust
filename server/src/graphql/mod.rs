@@ -3,10 +3,11 @@ use diesel::PgConnection;
 
 use juniper::{FieldResult, RootNode};
 
-use super::model::{Ingredient, NewIngredient};
+use crate::db::DbConn;
+use crate::model::{Ingredient};
 
 pub struct Context {
-    pub db_conn: PgConnection
+    pub db_conn: DbConn
 }
 
 impl juniper::Context for Context {}
@@ -14,14 +15,17 @@ impl juniper::Context for Context {}
 pub struct QueryRoot;
 
 graphql_object!(QueryRoot: Context |&self| {
-    field ingredients(&executor) -> FieldResult<Vec<Ingredient>> {
-        use super::schema::ingredients::dsl;
+    /*field ingredients(&executor) -> FieldResult<Vec<Ingredient>> {
+        use crate::schema::ingredients;
+        use crate::schema::ingredients::dsl;
 
-        dsl::ingredients
+        let ingredients = dsl::ingredients
             .order(ingredients::id.desc())
             .load::<Ingredient>(&executor.context().db_conn)
-            .unwrap()
-    }
+            .unwrap();
+
+        Ok(ingredients)
+    }*/
 });
 
 pub struct MutationRoot;

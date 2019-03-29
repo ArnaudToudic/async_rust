@@ -1,5 +1,6 @@
 use crate::schema::ingredients;
 
+#[derive(GraphQLObject)]
 #[derive(Queryable)]
 pub struct Ingredient {
     pub id: i32,
