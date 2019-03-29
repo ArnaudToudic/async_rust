@@ -43,7 +43,11 @@ fn call(req: Request<Body>) -> Box<Future<Item=Response<Body>, Error=hyper::Erro
 
     match (req.method(), req.uri().path()) {
         (&Method::GET, "/") => Box::new(juniper_hyper::graphiql("/graphql")),
+<<<<<<< HEAD
         (&Method::GET, "/graphql") => Box::new(juniper_hyper::graphql(root_node, ctx, req)),
+=======
+        //(&Method::GET, "/graphql") => Box::new(juniper_hyper::graphql(root_node, ctx, req)),
+>>>>>>> a09d3a471738eaee1cf56ac5d3d73473962cc3a5
         //(&Method::POST, "/graphql") => Box::new(juniper_hyper::graphql(root_node, ctx, req)),
         _ => {
             Box::new(future::ok(
