@@ -1,0 +1,25 @@
+$background: rgb(255, 127, 80);
+$background-hover: rgb(255, 115, 65);
+
+.button {
+  background-color: rgb(255, 127, 80);
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.3);
+  color: white;
+  //display: block;
+  height: 40px;
+  margin: 0 auto;
+  position: relative;
+  padding: 0;
+  text-align: center;
+  transition: 0.2s;
+  width: 40px;
+  z-index: 98;
+}
+
+.button:hover {
+  cursor: pointer;
+  background-color: rgb(255, 115, 65);
+  box-shadow: 0 8px 15px 0 rgba(0, 0, 0, 0.3);
+}
