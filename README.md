@@ -1,5 +1,5 @@
 The error seems to be caused by the lasts versions of rustc.
-Will fix it later because the necessity of use rusct-1.32.0 feel not so convenient.
+Will fix it later because the necessity to use rustc-1.32.0 feel not so convenient.
 
 #####
 
