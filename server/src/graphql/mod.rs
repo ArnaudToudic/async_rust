@@ -3,11 +3,10 @@ use diesel::PgConnection;
 
 use juniper::{FieldResult, RootNode};
 
-use crate::db::DbConn;
 use crate::model::{Ingredient};
 
 pub struct Context {
-    pub db_conn: DbConn
+    pub db_conn: std::sync::Mutex<PgConnection>
 }
 
 impl juniper::Context for Context {}
